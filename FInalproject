@@ -1,0 +1,316 @@
+import asyncio
+import logging
+import sys
+from os import getenv
+
+from aiogram import Bot, Dispatcher, Router, types
+from aiogram.enums import ParseMode
+from aiogram.filters import CommandStart
+from aiogram.types import Message
+from aiogram.types.reply_keyboard_markup import ReplyKeyboardMarkup
+from aiogram.types.keyboard_button import KeyboardButton
+from aiogram.types.inline_keyboard_markup import InlineKeyboardMarkup
+from aiogram.types.inline_keyboard_button import InlineKeyboardButton
+
+# Bot token can be obtained via https://t.me/BotFather
+TOKEN = "6433173309:AAFPaGtY5Jmn7E_GoEmxNcWKpWTQm45-R2g"
+
+# All handlers should be attached to the Router (or Dispatcher)
+dp = Dispatcher()
+# Initialize Bot instance with a default parse mode which will be passed to all API calls
+bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
+
+
+# --- REPLY MENU MARKUP ---
+def r_main_menu():
+    kb = ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="Про нас")],
+            [KeyboardButton(text="Про гру"), KeyboardButton(text="Магазин")],
+            [KeyboardButton(text="Зв'язатися з менеджером!!!")]
+        ],
+        resize_keyboard=True
+    )
+    return kb
+
+
+def r_sub_menu():
+    kb = ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="100 Кристалів")],
+            [KeyboardButton(text="150 Кристалів"), KeyboardButton(text="200 Кристалів")],
+            [KeyboardButton(text="300 Кристалів"), KeyboardButton(text="400 Кристалів")],
+            [KeyboardButton(text="Назад")]
+        ],
+        resize_keyboard=True
+    )
+    return kb
+
+def r_sub_menu1():
+    kb = ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="1000 Карбонівців")],
+            [KeyboardButton(text="2000 Карбонівців"), KeyboardButton(text="3000 Карбонівців")],
+            [KeyboardButton(text="4000 Карбонівців"), KeyboardButton(text="5000 Карбонівців")],
+            [KeyboardButton(text="Назад")]
+        ],
+        resize_keyboard=True
+    )
+    return kb
+def r_sub_menu2():
+    kb = ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="Віп на 7 днів"), KeyboardButton(text="Віп на 30 днів")],
+            [KeyboardButton(text="Назад")]
+        ],
+        resize_keyboard=True
+    )
+    return kb
+def r_sub_menu3():
+    kb = ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="BMW X5 M 2021")],
+            [KeyboardButton(text="BMW X7 2020"), KeyboardButton(text="BMW M5 F90 2024")],
+            [KeyboardButton(text="LAMBORGINI URUS 2021"), KeyboardButton(text="LAMBORGINI AVENTADOR 2024")],
+            [KeyboardButton(text="Назад")]
+        ],
+        resize_keyboard=True
+    )
+    return kb
+def r_sub_menu4():
+    kb = ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="Квартира N1")],
+            [KeyboardButton(text="Квартира N2"), KeyboardButton(text="Квартира N4")],
+            [KeyboardButton(text="Квартира N3"), KeyboardButton(text="Квартира N5")],
+            [KeyboardButton(text="Назад")]
+        ],
+        resize_keyboard=True
+    )
+    return kb
+def r_sub_menu5():
+    kb = ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="Будинок N1")],
+            [KeyboardButton(text="Будинок N2"), KeyboardButton(text="Будинок N4")],
+            [KeyboardButton(text="Будинок N3"), KeyboardButton(text="Будинок N5")],
+            [KeyboardButton(text="Назад")]
+        ],
+        resize_keyboard=True
+    )
+    return kb
+
+# --- INLINE MENU ---
+def i_test_menu():
+    kb = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="Кристали", callback_data="Кристали"),
+             InlineKeyboardButton(text="Карбонівці", callback_data="Карбонівці")],
+            [InlineKeyboardButton(text="Віп", callback_data="Віп"),
+             InlineKeyboardButton(text="Машини", callback_data="Машини")],
+            [InlineKeyboardButton(text="Квартири", callback_data="Квартири"),
+             InlineKeyboardButton(text="Будинкі", callback_data="Будинкі")]
+        ]
+    )
+    return kb
+
+
+@dp.callback_query(lambda c: c.data)
+async def process_callback(callback_query: types.CallbackQuery):
+    data = callback_query.data
+    chat_id = callback_query.from_user.id
+    if data == "Кристали":
+        await bot.send_message(chat_id, "Кристали", reply_markup=r_sub_menu())
+    elif data == "Карбонівці":
+        await bot.send_message(chat_id, "Карбонівці", reply_markup=r_sub_menu1())
+    if data == "Віп":
+        await bot.send_message(chat_id, "Віп", reply_markup=r_sub_menu2())
+    if data == "Машини":
+        await bot.send_message(chat_id, "Машини", reply_markup=r_sub_menu3())
+    if data == "Квартири":
+        await bot.send_message(chat_id, "Квартири", reply_markup=r_sub_menu4())
+    if data == "Будинкі":
+        await bot.send_message(chat_id, "Будинкі", reply_markup=r_sub_menu5())
+
+
+@dp.message(CommandStart())
+async def command_start_handler(message: Message) -> None:
+    await message.answer("Доброго дня!", reply_markup=r_main_menu())
+
+@dp.message()
+async def reply_kb_handler(message: types.Message) -> None:
+    chat = "https://t.me/no_nemchik999"
+    msg = message.text
+    cid = message.from_user.id
+
+    if msg == "Зв'язатися з менеджером!!!":
+        await message.answer(chat)
+
+    if msg == "Про нас":
+        # await bot.send_message(cid, "Some Text")
+        text = ("Швидка відповідь на ваші запитання\n"
+                "З нами можна зв'язатися по номеру\n"
+                "телефона +380********\n"
+                "Гарной гри ❤")
+        await message.answer(text)
+    elif msg == "Про гру":
+        await message.answer("Ця гра створенна в форматті Реального життя.\n"
+                             "Де треба ходити на роботу займатися бізнесом.\n"
+                             "Купляти Квартири,Будинки,Машини і ще багато іншого.\n"
+                             "Гарной гри ❤",)
+    elif msg == "Назад":
+        await message.answer("Ви повернуль назад", reply_markup=r_main_menu())
+    elif msg == "Магазин":
+        await message.answer("Меню", reply_markup=i_test_menu())
+
+
+    if msg == "100 Кристалів":
+        text = ("До оплати 100 опита\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "150 Кристалів":
+        text = ("До оплати 150 опита\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "200 Кристалів":
+        text = ("До оплати 200 опита\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "300 Кристалів":
+        text = ("До оплати 300 опита\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "400 Кристалів":
+        text = ("До оплати 400 опита\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+
+    if msg == "1000 Карбонівців":
+        text = ("До оплати 200 ранга\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "2000 Карбонівців":
+        text = ("До оплати 400 ранга\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "3000 Карбонівців":
+        text = ("До оплати 600 ранга\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "4000 Карбонівців":
+        text = ("До оплати 800 ранга\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "5000 Карбонівців":
+        text = ("До оплати 1000 ранга\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+
+    if msg == "Віп на 7 днів":
+        text = ("До оплати 200 Карбонівців\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "Віп на 30 днів":
+        text = ("До оплати 800 Карбонівців\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+
+    if msg == "BMW X5 M 2021":
+        text = ("До оплати 1000 Кристалів\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "BMW X7 2020":
+        text = ("До оплати 899 Кристалів\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "BMW M5 F90 2024":
+        text = ("До оплати 1999 Кристалів\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "LAMBORGINI AVENTADOR 2024":
+        text = ("До оплати 5999 Кристалів\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "LAMBORGINI URUS 2021":
+        text = ("До оплати 3000 Кристалів\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+
+    if msg == "Квартира N1":
+        text = ("До оплати 1000 Кристалів\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "Квартира N2":
+        text = ("До оплати 2000 Кристалів\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "Квартира N3":
+        text = ("До оплати 3000 Кристалів\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "Квартира N4":
+        text = ("До оплати 4000 Кристалів\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "Квартира N5":
+        text = ("До оплати 5000 Кристалів\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+
+    if msg == "Будинок N1":
+        text = ("До оплати 2000 Кристалів\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "Будинок N2":
+        text = ("До оплати 4000 Кристалів\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "Будинок N3":
+        text = ("До оплати 6000 Кристалів\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "Будинок N4":
+        text = ("До оплати 8000 Кристалів\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+    if msg == "Будинок N5":
+        text = ("До оплати 10000 Кристалів\n"
+                "Кидати на айді\n"
+                "333888333888❤")
+        await message.answer(text)
+
+
+async def main() -> None:
+    # And the run events dispatching
+    await dp.start_polling(bot)
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+    asyncio.run(main())
